@@ -215,17 +215,6 @@ ig.module('cc-ava.poststart')
                 customOptions["Story (" + storyCount + ")"] = storyTab;
                 customOptions["Generic NPCs (" + genericKeys.length + ")"] = genericTab;
 
-                // Force sync CCModManager's cached options from disk truths before registering
-                if (window.modmanager && window.modmanager.options) {
-                    if (!window.modmanager.options["cc-ava"]) {
-                        window.modmanager.options["cc-ava"] = {};
-                    }
-                    var ccOpt = window.modmanager.options["cc-ava"];
-                    ccOpt["va-model-selection"] = initModelIdx;
-                    ccOpt["va-debug-mode"] = !!configData.debug;
-                    
-                }
-
                 window.modmanager.registerAndGetModOptions(
                     {
                         modId: "cc-ava",
@@ -233,6 +222,13 @@ ig.module('cc-ava.poststart')
                     },
                     customOptions
                 );
+
+                // Sync CCModManager's cached options from config after registration creates the options object
+                if (window.modmanager.options && window.modmanager.options["cc-ava"]) {
+                    var ccOpt = window.modmanager.options["cc-ava"];
+                    ccOpt["va-model-selection"] = initModelIdx;
+                    ccOpt["va-debug-mode"] = !!configData.debug;
+                }
             } catch (e) {
                 console.error("[CC-VA] ModManager hook failed:", e);
             }
