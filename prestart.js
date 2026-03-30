@@ -130,11 +130,14 @@
             this._playing = false;
         },
 
-        play: function (audioData, pitch) {
+        play: function (audioData, pitch, voiceVolume) {
             var self = this;
             this.stop();
             if (!this._audioContext) return Promise.reject(new Error('No AudioContext'));
             if (this._audioContext.state === 'suspended') this._audioContext.resume();
+
+            // Per-voice volume: 0-100 scale, default 100
+            var vVol = (typeof voiceVolume === 'number') ? Math.max(0, Math.min(1, voiceVolume / 100)) : 1.0;
 
             return this._audioContext.decodeAudioData(audioData.slice(0))
                 .then(function (audioBuffer) {
@@ -146,11 +149,11 @@
 
                     // Per-clip gain node for fade-out to prevent end-of-clip clipping
                     var clipGain = self._audioContext.createGain();
-                    clipGain.gain.value = 1.0;
+                    clipGain.gain.value = vVol;
                     var fadeOutDuration = 0.075; // 75ms fade-out
                     var fadeOutStart = Math.max(0, audioBuffer.duration - fadeOutDuration);
                     var now = self._audioContext.currentTime;
-                    clipGain.gain.setValueAtTime(1.0, now + fadeOutStart);
+                    clipGain.gain.setValueAtTime(vVol, now + fadeOutStart);
                     clipGain.gain.linearRampToValueAtTime(0.0, now + fadeOutStart + fadeOutDuration);
 
                     // Chain: source -> clipGain -> masterGain -> destination
@@ -544,7 +547,12 @@
                 pitch = this.config.voices[charName].pitch;
             }
 
-            return { text: text, originalText: originalText, voiceId: voiceId, charName: charName, pitch: pitch };
+            var voiceVolume = 100;
+            if (this.config.voices && this.config.voices[charName] && this.config.voices[charName].volume !== undefined) {
+                voiceVolume = this.config.voices[charName].volume;
+            }
+
+            return { text: text, originalText: originalText, voiceId: voiceId, charName: charName, pitch: pitch, volume: voiceVolume };
         },
 
         _playEntry: function (entry) {
@@ -564,7 +572,7 @@
                     if (window._ccvaDebug) {
                         console.log('[CC-VA] Playing cached: [' + charName + '] ' + cacheKey + '.mp3 -> "' + entry.text.substring(0, 40) + '..."');
                     }
-                    return this._audio.play(cachedAudio, entry.pitch);
+                    return this._audio.play(cachedAudio, entry.pitch, entry.volume);
                 }
             }
 
@@ -584,7 +592,7 @@
                         if (window._ccvaDebug) console.log('[CC-VA] Discarding stale TTS result (seq ' + mySeq + ' != ' + self._speakSeq + ')');
                         return;
                     }
-                    return self._audio.play(audioData, entry.pitch);
+                    return self._audio.play(audioData, entry.pitch, entry.volume);
                 })
                 .catch(function (err) {
                     console.error('[CC-VA] TTS error:', err.message || err);
@@ -765,47 +773,48 @@
                     window._ccvaUI.prompt("Enter Pitch Multiplier for '" + charName + "' (e.g. 1.0, 0.85, 1.25):", currentPitch, function(newPitch) {
                         if (newPitch === null) return;
                         
-                        var parsed = parseFloat(newPitch);
-                        if (!isNaN(parsed) && parsed > 0) {
-                            self.config.voices[charName].pitch = parsed;
-                            entry.pitch = parsed;
+                        var parsedPitch = parseFloat(newPitch);
+                        if (!isNaN(parsedPitch) && parsedPitch > 0) {
+                            self.config.voices[charName].pitch = parsedPitch;
+                            entry.pitch = parsedPitch;
                         }
 
-                        newId = newId.trim();
-                        self.config.voices[charName].voiceId = newId;
-                        self.config.voices[charName].enabled = true;
-                        entry.voiceId = newId;
-                        
-                        // Instantly update any pre-buffered side-messages waiting to play
-                        if (self._sideMsgPending) {
-                            for (var i = 0; i < self._sideMsgPending.length; i++) {
-                                if (self._sideMsgPending[i].charName === charName) {
-                                    self._sideMsgPending[i].voiceId = newId;
+                        var currentVol = (typeof self.config.voices[charName].volume === "number" ? self.config.voices[charName].volume : 100).toString();
+                        window._ccvaUI.prompt("Enter Volume for '" + charName + "' (0-100):", currentVol, function(newVol) {
+                            if (newVol === null) return;
+
+                            var parsedVol = parseInt(newVol, 10);
+                            if (!isNaN(parsedVol) && parsedVol >= 0 && parsedVol <= 100) {
+                                self.config.voices[charName].volume = parsedVol;
+                                entry.volume = parsedVol;
+                            }
+
+                            newId = newId.trim();
+                            self.config.voices[charName].voiceId = newId;
+                            self.config.voices[charName].enabled = true;
+                            entry.voiceId = newId;
+                            
+                            try {
+                                var fs = require('fs');
+                                var path = require('path');
+                                var gameRoot = path.resolve('.');
+                                var configPath = path.join(gameRoot, 'assets', 'mod-data', 'cc-ava', 'voice-config.json');
+                                fs.writeFileSync(configPath, JSON.stringify(self.config, null, 4), 'utf-8');
+                                
+                                if (window.modmanager && window.modmanager.options && window.modmanager.options["cc-ava"]) {
+                                    window.modmanager.options["cc-ava"]["va-" + charName + "-id"] = newId;
                                 }
-                            }
-                        }
-                        
-                        try {
-                            var fs = require('fs');
-                            var path = require('path');
-                            var gameRoot = path.resolve('.');
-                            var configPath = path.join(gameRoot, 'assets', 'mod-data', 'cc-ava', 'voice-config.json');
-                            fs.writeFileSync(configPath, JSON.stringify(self.config, null, 4), 'utf-8');
-                            
-                            // Immediately synchronize to the CCModManager UI options so it persists visually next time user opens the menu
-                            if (window.modmanager && window.modmanager.options && window.modmanager.options["cc-ava"]) {
-                                window.modmanager.options["cc-ava"]["va-" + charName + "-id"] = newId;
+                                
+                                console.log('[CC-VA] Saved Voice config for ' + charName + ': ID=' + newId + ', Pitch=' + (self.config.voices[charName].pitch || 1.0) + ', Vol=' + (self.config.voices[charName].volume || 100));
+                            } catch (e) {
+                                console.error('[CC-VA] Failed to save config:', e);
                             }
                             
-                            console.log('[CC-VA] Saved new Voice ID for ' + charName + ': ' + newId);
-                        } catch (e) {
-                            console.error('[CC-VA] Failed to save config:', e);
-                        }
-                        
-                        // Auto-regenerate and play to preview immediately
-                        if (newId) {
-                            self._regenerateLast(false);
-                        }
+                            // Auto-regenerate and play to preview immediately
+                            if (newId) {
+                                self._regenerateLast(false);
+                            }
+                        });
                     });
                 });
             };
@@ -813,7 +822,7 @@
             if (!this.config.voices[charName]) {
                 window._ccvaUI.confirm("Character '" + charName + "' is not currently recognized in the mod configuration. Add them as a trackable entity?", function(addIt) {
                     if (!addIt) return;
-                    self.config.voices[charName] = { enabled: true, label: charName, pitch: 1 };
+                    self.config.voices[charName] = { enabled: true, label: charName, pitch: 1, volume: 100 };
                     assignPrompt();
                 });
             } else {
@@ -839,7 +848,7 @@
                 self._tts.generateSpeech(textToGen, entry.voiceId, self.config.apiKey, self.config.model)
                     .then(function (audioData) {
                         self._cache.set(cacheKey, entry.charName, audioData, textToGen);
-                        self._audio.play(audioData, entry.pitch);
+                        self._audio.play(audioData, entry.pitch, entry.volume);
                     })
                     .catch(function (err) {
                         console.error('[CC-VA] TTS Regeneration error:', err.message || err);

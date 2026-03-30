@@ -1,13 +1,12 @@
 {
     "id": "cc-ava",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "title": "CrossCode Artificial Voice Acting (TTS)",
     "description": "Adds AI-generated voice acting to CrossCode using the ElevenLabs text-to-speech API.",
     "repository": "https://github.com/cyelis1224/cc-ava",
     "tags": [
-        "voice",
-        "audio",
-        "tts"
+        "accessibility",
+        "music"
     ],
     "authors": [
         "Dagyr"
