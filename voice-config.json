@@ -1621,10 +1621,10 @@
         "Hlin": "[in IPA] Hɪˈlɪn",
         "Faj'ro": "[in IPA] faɪ.roʊ",
         "Ba'kii Kum": "[in IPA] baki ˈkʉm",
-        "Zir'vitar": "[in IPA] zɪr.ˈvɪt.ɐr",
+        "Zir'vitar": "[in IPA] ˈzɪr.vɪt.ːɐr",
         "So'najiz": "[in IPA] soʊ.ˈnais",
         "Krys'kajo": "[in IPA] ˈkɹɪs.ˈkaɪoʊ",
-        "Ku'lero": "[in IPA] ku.ˈlær.oʊ"
+        "Ku'lero": "[in IPA] ku.ˈːlær.oʊ"
     },
     "skipPatterns": [
         "^[.!?\\-…\\s]+$",
