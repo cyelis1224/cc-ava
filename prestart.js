@@ -18,7 +18,7 @@
     var VA_TTS_CLIENT = {
         API_BASE: 'https://api.elevenlabs.io/v1',
 
-        cleanText: function (text, pronunciations) {
+        cleanText: function (text, pronunciations, model) {
             if (!text || typeof text !== 'string') return null;
             var cleaned = text;
             // Remove CC formatting: \c[N], \v[...], \s[...], \i[...], \size[N], etc.
@@ -32,8 +32,8 @@
             cleaned = cleaned.replace(/<<[A-Z]<<\[CHANGED[^\]]*\]/g, '');
             // Remove brackets but keep the text inside (preserves [Seeker], [Bergen Village], etc.)
             cleaned = cleaned.replace(/\[([^\]]*)\]/g, '$1');
-            // Apply pronunciation corrections (word-boundary replacements)
-            if (pronunciations) {
+            // Apply pronunciation corrections only on v3 model (IPA notation support)
+            if (pronunciations && model === 'eleven_v3') {
                 var words = Object.keys(pronunciations);
                 for (var i = 0; i < words.length; i++) {
                     var regex = new RegExp('\\b' + words[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
@@ -531,12 +531,12 @@
 
         _prepareSpeak: function (charName, rawText) {
             if (!this._initialized || !this.config || !this.config.enabled) return null;
-            var text = this._tts.cleanText(rawText, this.config.pronunciations);
+            var text = this._tts.cleanText(rawText, this.config.pronunciations, this.config.model);
             if (!text) return null;
             if (this._tts.shouldSkip(text, this.config.skipPatterns)) return null;
 
             var originalText = text;
-            if (this.config.transcriptionOverrides && this.config.transcriptionOverrides[originalText]) {
+            if (this.config.model === 'eleven_v3' && this.config.transcriptionOverrides && this.config.transcriptionOverrides[originalText]) {
                 text = this.config.transcriptionOverrides[originalText];
             }
 
