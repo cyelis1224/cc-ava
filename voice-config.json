@@ -1615,11 +1615,15 @@
         }
     },
     "pronunciations": {
-        "Lea": "Leah",
-        "lea": "Leah",
-        "Faj'ro": "Fah-ee-roh",
-        "faj'ro": "Fah-ee-roh",
-        "Ba'kii Kum": "Bah-Key-Kuum"
+        "Lea": "[in IPA] liä",
+        "lea": "[in IPA] liä",
+        "Faj'ro": "[in IPA] faɪ-roʊ",
+        "faj'ro": "[in IPA] faɪ-roʊ",
+        "Ba'kii Kum": "[in IPA] baki kʉm",
+        "Zir'vitar": "[in IPA] zɪr-vɪtɐr",
+        "So'najiz": "[in IPA] soʊ-naɪs",
+        "Krys'kajo": "[in IPA] kɹɪs-kaɪoʊ",
+        "Ku'lero": "[in IPA] ku-læroʊ"
     },
     "skipPatterns": [
         "^[.!?\\-…\\s]+$",
