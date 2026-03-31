@@ -1623,16 +1623,19 @@
         }
     },
     "pronunciations": {
+        "Lea (in ipa, if you ever want to switch to it. delete this line if you don't.)": "[in IPA] lˈiˌä",
         "Lea": "Leah",
-        "LEA": "Leah",
         "lea": "Leah",
-        "Faj'ro": "[in IPA] faɪ-roʊ",
-        "faj'ro": "[in IPA] faɪ-roʊ",
-        "Ba'kii Kum": "[in IPA] baki kʉm",
-        "Zir'vitar": "[in IPA] zɪr-vɪtɐr",
-        "So'najiz": "[in IPA] soʊ-naɪs",
-        "Krys'kajo": "[in IPA] kɹɪs-kaɪoʊ",
-        "Ku'lero": "[in IPA] ku-læroʊ"
+        "LEA": "Leah",
+        "Shizuka": "[in IPA] ʃˈɪ.zju.ːkə",
+        "Schneider": "[in IPA] ˈʃnaɪ̯dɐ",
+        "Hlin": "[in IPA] Hɪˈlɪn",
+        "Faj'ro": "[in IPA] ˈfaɪˌroʊ",
+        "Ba'kii Kum": "[in IPA] ˈbaˌki ˈkʉm",
+        "Zir'vitar": "[in IPA] ˈzɪr.vɪtˌːɐr",
+        "So'najiz": "[in IPA] ˈsoʊˌnais",
+        "Krys'kajo": "[in IPA] ˌkɹɪsˈkaɪoʊ",
+        "Ku'lero": "[in IPA] ˌkuˈːlær.oʊ"
     },
     "skipPatterns": [
         "^[.!?\\-…\\s]+$",
