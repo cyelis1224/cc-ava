@@ -540,6 +540,24 @@
                 text = this.config.transcriptionOverrides[originalText];
             }
 
+            // Apply speaker-based text prefixes (e.g. "[shad accent] " for baki NPCs)
+            // Only on v3 model, and skip if text already starts with a bracket tag
+            if (this.config.model === 'eleven_v3' && this.config.speakerPrefixes && charName) {
+                var prefixKeys = Object.keys(this.config.speakerPrefixes);
+                for (var pi = 0; pi < prefixKeys.length; pi++) {
+                    if (charName.toLowerCase().indexOf(prefixKeys[pi].toLowerCase()) !== -1) {
+                        // Don't double-tag: skip if text already starts with a bracket directive
+                        if (!/^\[/.test(text)) {
+                            text = this.config.speakerPrefixes[prefixKeys[pi]] + text;
+                            if (window._ccvaDebug) {
+                                console.log('[CC-VA] Applied speaker prefix "' + prefixKeys[pi] + '" -> "' + text.substring(0, 60) + '..."');
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
             var voiceId = this._resolveVoice(charName) || "";
 
             var pitch = 1.0;

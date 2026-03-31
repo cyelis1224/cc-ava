@@ -4,6 +4,14 @@
     "enabled": true,
     "volume": 1,
     "generateOnDemand": true,
+    "speakerPrefixes": {
+        "baki": "[shad accent] ",
+        "greenies-baki": "[shad accent] ",
+        "bergen": "[northern accent] ",
+        "rhombus": "[city accent] ",
+        "rookie-harbor": "[city accent] ",
+        "shady-canyon": "[desert accent] "
+    },
     "voices": {
         "adventurers-jungle.female-white-hat": {
             "voiceId": "",
@@ -1615,8 +1623,9 @@
         }
     },
     "pronunciations": {
-        "Lea": "[in IPA] liä",
-        "lea": "[in IPA] liä",
+        "Lea": "Leah",
+        "LEA": "Leah",
+        "lea": "Leah",
         "Faj'ro": "[in IPA] faɪ-roʊ",
         "faj'ro": "[in IPA] faɪ-roʊ",
         "Ba'kii Kum": "[in IPA] baki kʉm",
