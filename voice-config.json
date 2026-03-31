@@ -1615,16 +1615,16 @@
         }
     },
     "pronunciations": {
-        "Lea": "[in IPA] li.ä",
+        "Lea": "[in IPA] lˈiˌä",
         "Shizuka": "[in IPA] ʃˈɪ.zju.ːkə",
         "Schneider": "[in IPA] ˈʃnaɪ̯dɐ",
         "Hlin": "[in IPA] Hɪˈlɪn",
-        "Faj'ro": "[in IPA] faɪ.roʊ",
-        "Ba'kii Kum": "[in IPA] baki ˈkʉm",
-        "Zir'vitar": "[in IPA] ˈzɪr.vɪt.ːɐr",
-        "So'najiz": "[in IPA] soʊ.ˈnais",
-        "Krys'kajo": "[in IPA] ˈkɹɪs.ˈkaɪoʊ",
-        "Ku'lero": "[in IPA] ku.ˈːlær.oʊ"
+        "Faj'ro": "[in IPA] ˈfaɪˌroʊ",
+        "Ba'kii Kum": "[in IPA] ˈbaˌki ˈkʉm",
+        "Zir'vitar": "[in IPA] ˈzɪr.vɪtˌːɐr",
+        "So'najiz": "[in IPA] ˈsoʊˌnais",
+        "Krys'kajo": "[in IPA] ˈkɹɪsˈkaɪoʊ",
+        "Ku'lero": "[in IPA] ˌkuˈːlær.oʊ"
     },
     "skipPatterns": [
         "^[.!?\\-…\\s]+$",
